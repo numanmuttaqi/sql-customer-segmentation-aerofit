@@ -1,0 +1,32 @@
+BUSINESS QUESTIONS
+1. Which treadmill product is purchased by which customer segment?
+2. How does income differ across KP281, KP481, and KP781 buyers?
+3. Which product has the highest average expected weekly usage?
+4. Are high-fitness customers concentrated in the premium product?
+5. Does marital status or gender show different purchase patterns?
+6. What customer profile should marketing target for each product?
+
+BUSINESS ANALYSIS
+- Project objective
+- Dataset overview
+- Database schema
+- Key business QUESTIONS
+- SQL ANALYSIS
+- Main findings
+- Business Transformations
+- Limitations
+
+
+CSV file → Create PostgreSQL database → SQL queries → analysis results → business insights → README/GitHub portfolio
+
+starting database:
+1. install postgres sql with brew
+2. start the services
+    brew services start postgresql@18
+3. check if its available
+    brew services list
+4. create database
+    createdb name_database
+5. Enter the database   
+    psql name_database
+
