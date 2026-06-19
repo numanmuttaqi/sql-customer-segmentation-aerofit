@@ -1,44 +1,104 @@
-# Treadmill Buyer Profile
+# AeroFit Treadmill Customer Segmentation — SQL Analysis
 
-This data project has been used as a take-home assignment in the recruitment process for the data science positions at Aerofit.
+A SQL-based customer segmentation analysis for AeroFit, a fitness equipment brand. The goal is to identify the characteristics of buyers for each treadmill product so the marketing team can target the right customer with the right product.
 
-## Assignment - Beginner SQL Portion
+---
 
-The goal of this project is to be self-serving, and think from the perspective of a Data Analyst / Scientist. Instead of giving you scenarios that do no more than help you memorize syntax, think of questions the Manager of Marketing may be asking you. It can be as easy or complex as you want it to be.
+## Business Problem
 
-Import this .csv into a SQL database of your choosing.
+AeroFit sells three treadmills at different price points. The marketing team needs to know:
+- Who buys each product (age, income, fitness level, gender)?
+- What separates a premium buyer from an entry-level buyer?
+- Which customers are candidates for an upsell?
 
-A few ideas to get the ball rolling:
-- Average Age of customer per treadmill type.
-- What fitness level is associated with each treadmille type?
+---
 
-## Assignment - Data Science Portion
+## Product Portfolio
 
-The market research team at AeroFit wants to identify the characteristics of the target audience for each type of treadmill offered by the company, to provide a better recommendation of the treadmills to new customers. The team decides to investigate whether there are differences across the product with respect to customer characteristics.
+| Product | Price | Tier |
+|---------|-------|------|
+| KP281 | $1,500 | Entry-level |
+| KP481 | $1,750 | Mid-level |
+| KP781 | $2,500 | Premium |
 
-1. Perform descriptive analytics to create a customer profile for each AeroFit treadmill product by developing appropriate tables and charts.
-2. For each AeroFit treadmill product, construct two-way contingency tables and compute all conditional and marginal probabilities along with their insights/impact on the business.
+---
 
-## Product Portfolio:
+## Dataset
 
-    The KP281 is an entry-level treadmill that sells for $1,500;
-    The KP481 is for mid-level runners and sells for $1,750;
-    The KP781 treadmill is having advanced features and it sells for $2,500.
+180 customers surveyed after purchase from AeroFit stores over a 3-month period.
 
-## Data Description
+| Column | Description |
+|--------|-------------|
+| `product` | Treadmill purchased (KP281 / KP481 / KP781) |
+| `age` | Customer age in years |
+| `gender` | Male / Female |
+| `education` | Years of education |
+| `marital_status` | Single / Partnered |
+| `usages` | Planned uses per week |
+| `fitness` | Self-rated fitness 1 (poor) to 5 (excellent) |
+| `income` | Annual income in USD |
+| `miles` | Expected miles walked/run per week |
 
-The company collected data on individuals who purchased a treadmill from the AeroFit stores during the prior three months. The dataset in aerofit_treadmill_data.csv has the following features:
+---
 
-    Product - product purchased: KP281, KP481, or KP781
-    Age - in years
-    Gender - male/female
-    Education - in years
-    MaritalStatus - single or partnered
-    Usage - the average number of times the customer plans to use the treadmill each week
-    Fitness - self-rated fitness on a 1-5 scale, where 1 is the poor shape and 5 is the excellent shape
-    Income - annual income in US dollars
-    Miles - the average number of miles the customer expects to walk/run each week
+## Project Structure
 
-## Practicalities
+```
+sql/
+  01_create_table.sql           — Schema: creates the aerofit_customers table
+  02_data_quality_checks.sql    — NULL checks, value ranges, duplicate detection
+  03_customer_segmentation.sql  — Age groups, income tiers, fitness levels per product
+  04_product_analysis.sql       — Answers the 6 core business questions
+  05_business_recommendations.sql — Product rankings, target profiles, upsell candidates
 
-Analyze the provided data and provide insights to the best of your abilities. Include the relevant tables/graphs/visualization to explain what you have learned about the market. Make sure that the solution reflects your entire thought process including the preparation of data - it is more important how the code is structured rather than just the final result or plot.
+data/
+  aerofit_treadmill_data.csv    — Raw survey data (180 rows)
+
+outputs/
+  key_findings.md               — Written conclusions with real numbers
+```
+
+---
+
+## How to Run
+
+**Requirements:** PostgreSQL
+
+```bash
+# Create the database
+createdb aerofit_db
+
+# Create the table
+psql -U <your_username> -d aerofit_db -f sql/01_create_table.sql
+
+# Load the data
+psql -U <your_username> -d aerofit_db -c "\COPY aerofit_customers FROM 'data/aerofit_treadmill_data.csv' CSV HEADER;"
+
+# Run the analysis
+psql -U <your_username> -d aerofit_db -f sql/02_data_quality_checks.sql
+psql -U <your_username> -d aerofit_db -f sql/03_customer_segmentation.sql
+psql -U <your_username> -d aerofit_db -f sql/04_product_analysis.sql
+psql -U <your_username> -d aerofit_db -f sql/05_business_recommendations.sql
+```
+
+---
+
+## Key Findings
+
+- **KP781 buyers are a completely different profile.** They earn 63% more ($75k vs $46k), have significantly higher fitness (4.6/5 vs 3.0/5), and run twice as many miles per week (167 vs 83) compared to KP281 buyers.
+
+- **Fitness level is the strongest predictor of product choice.** 90% of KP781 buyers rated themselves high fitness (4–5). Only 14% of KP281 and KP481 buyers did. Income alone does not explain the split.
+
+- **KP281 and KP481 buyers look nearly identical** in age, income, and fitness. The data suggests weak differentiation between these two products from a customer profile perspective.
+
+- **KP781 skews heavily male** — 82.5% of premium buyers are male vs a near 50/50 split for the other two products. This is a potential gap in female marketing for the premium tier.
+
+- **Marital status does not predict product choice** — the 60/40 partnered/single split is consistent across all three products.
+
+- **3 upsell candidates identified** — KP281 buyers with income >$50k and fitness >= 4 who fit the premium buyer profile but chose the entry-level product.
+
+---
+
+## SQL Concepts Used
+
+`GROUP BY` · `HAVING` · `CASE WHEN` · Window functions (`OVER`, `PARTITION BY`, `RANK()`) · `UNION ALL` · Aggregate functions (`COUNT`, `AVG`, `MIN`, `MAX`) · `MODE() WITHIN GROUP` · `CONCAT()`
